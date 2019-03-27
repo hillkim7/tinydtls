@@ -319,7 +319,9 @@ void dtls_check_retransmit(dtls_context_t *context, clock_time_t *next, bool* is
 #define DTLS_CT_APPLICATION_DATA   23
 
 /** Generic header structure of the DTLS record layer. */
-typedef struct __attribute__((__packed__)) {
+#pragma pack(push,1)
+
+typedef struct {
   uint8 content_type;		/**< content type of the included message */
   uint16 version;		/**< Protocol version */
   uint16 epoch;		        /**< counter for cipher state changes */
@@ -343,7 +345,7 @@ typedef struct __attribute__((__packed__)) {
 #define DTLS_HT_FINISHED            20
 
 /** Header structure for the DTLS handshake protocol. */
-typedef struct __attribute__((__packed__)) {
+typedef struct {
   uint8 msg_type; /**< Type of handshake message  (one of DTLS_HT_) */
   uint24 length;  /**< length of this message */
   uint16 message_seq; 	/**< Message sequence number */
@@ -353,7 +355,7 @@ typedef struct __attribute__((__packed__)) {
 } dtls_handshake_header_t;
 
 /** Structure of the Client Hello message. */
-typedef struct __attribute__((__packed__)) {
+typedef struct {
   uint16 version;	  /**< Client version */
   uint32 gmt_random;	  /**< GMT time of the random byte creation */
   unsigned char random[28];	/**< Client random bytes */
@@ -364,11 +366,13 @@ typedef struct __attribute__((__packed__)) {
 } dtls_client_hello_t;
 
 /** Structure of the Hello Verify Request. */
-typedef struct __attribute__((__packed__)) {
+typedef struct {
   uint16 version;		/**< Server version */
   uint8 cookie_length;	/**< Length of the included cookie */
   uint8 cookie[];		/**< up to 32 bytes making up the cookie */
 } dtls_hello_verify_t;  
+
+#pragma pack(pop)
 
 #if 0
 /** 

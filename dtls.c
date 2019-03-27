@@ -4006,6 +4006,38 @@ dtls_handle_message(dtls_context_t *ctx,
   return 0;
 }
 
+#if defined(WIN32)
+
+dtls_context_t *
+dtls_new_context(void *app_data) {
+  dtls_context_t *c;
+  dtls_tick_t now;
+
+  dtls_ticks(&now);
+  dtls_prng_init(now);
+
+  c = malloc_context();
+  if (!c)
+    goto error;
+
+  memset(c, 0, sizeof(dtls_context_t));
+  c->app = app_data;
+
+  if (dtls_prng(c->cookie_secret, DTLS_COOKIE_SECRET_LENGTH))
+    c->cookie_secret_age = now;
+  else
+    goto error;
+
+  return c;
+
+error:
+  dtls_alert("cannot create DTLS context\n");
+  if (c)
+    dtls_free_context(c);
+  return NULL;
+}
+
+#else
 dtls_context_t *
 dtls_new_context(void *app_data) {
   dtls_context_t *c;
@@ -4075,6 +4107,7 @@ dtls_new_context(void *app_data) {
     dtls_free_context(c);
   return NULL;
 }
+#endif
 
 void dtls_reset_peer(dtls_context_t *ctx, dtls_peer_t *peer)
 {

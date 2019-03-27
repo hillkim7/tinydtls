@@ -68,7 +68,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LDECLTYPE(x) decltype(x)
 #else                     /* VS2008 or older (or VS2010 in C mode) */
 #define NO_DECLTYPE
-#define LDECLTYPE(x) char*
+#define LDECLTYPE(x) netq_t*
 #endif
 #elif defined(__ICCARM__)
 #define NO_DECLTYPE

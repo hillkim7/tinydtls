@@ -33,7 +33,9 @@ typedef struct {
 
 #else /* WITH_CONTIKI */
 
+#if !defined(WIN32)
 #include <platform/inet.h>
+#endif
 
 typedef struct {
   socklen_t size;		/**< size of addr */

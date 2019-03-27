@@ -23,7 +23,7 @@
 #define _DTLS_DTLS_TIME_H_
 
 #include <stdint.h>
-#ifndef __RTOS__
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #else
 #include <time.h>

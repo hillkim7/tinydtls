@@ -61,6 +61,8 @@ void dtls_ticks(dtls_tick_t *t) {
   gettimeofday(&tv, NULL);
   *t = (tv.tv_sec - dtls_clock_offset) * DTLS_TICKS_PER_SECOND 
     + (tv.tv_usec * DTLS_TICKS_PER_SECOND / 1000000);
+#elif defined(WIN32)
+  *t = GetTickCount();
 #else
 #if (__SWI_PLAT__ & (SWI_HL85xx))
 	// OS ADAPTATION LAYER TO BE ADDED

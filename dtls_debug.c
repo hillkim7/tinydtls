@@ -165,7 +165,54 @@ dsrv_print_addr(const session_t *addr, char *buf, size_t len) {
   p += snprintf(p, buf + len - p + 1, ":%d", port);
 
   return p - buf;
+#elif defined(WIN32)
+  const void *addrptr = NULL;
+  uint16_t port;
+  char *p = buf;
+
+  switch (addr->addr.sa.sa_family) {
+  case AF_INET:
+    if (len < INET_ADDRSTRLEN)
+      return 0;
+
+    addrptr = &addr->addr.sin.sin_addr;
+    port = ntohs(addr->addr.sin.sin_port);
+    break;
+  case AF_INET6:
+    if (len < INET6_ADDRSTRLEN + 2)
+      return 0;
+
+    *p++ = '[';
+
+    addrptr = &addr->addr.sin6.sin6_addr;
+    port = ntohs(addr->addr.sin6.sin6_port);
+
+    break;
+  default:
+    memcpy(buf, "(unknown address type)", min(22, len));
+    return min(22, len);
+  }
+
+  if (inet_ntop(addr->addr.sa.sa_family, addrptr, p, len) == 0) {
+    perror("dsrv_print_addr");
+    return 0;
+  }
+
+  p += dtls_strnlen(p, len);
+
+  if (addr->addr.sa.sa_family == AF_INET6) {
+    if (p < buf + len) {
+      *p++ = ']';
+    }
+    else
+      return 0;
+}
+
+  p += snprintf(p, buf + len - p + 1, ":%d", port);
+
+  return p - buf;
 #else /* HAVE_ARPA_INET_H */
+
 # if WITH_CONTIKI
   char *p = buf;
 #  ifdef UIP_CONF_IPV6
